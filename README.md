@@ -1,101 +1,166 @@
-# 1. 리액트 프로젝트 초기세팅
+# 2. 컴포넌트
 
-## 1.1 리액트 프로젝트 생성
+## 2.1 클래스형 컴포넌트
 
-- `npx create-react-app ./`
-- `yarn create react-app ./`
+- 생긴 모양만 일단 알아두자
+- 함수형과 기능에서 큰 차이 없다.
+- **트렌드 함수형 컴포넌트와 Hooks을 사용하는 것**
 
-## 1.2 파일 정리
+```js
+import React, { Component } from "react";
+import "./react.css";
 
-- src/test 파일들 삭제
-- App.css 파일 삭제
-- index.js 파일 정리
-- index.css 파일 수정
+// const Main = () => {
+//   const title = "리액트";
 
-```css
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  outline-style: none;
+//   return (
+//     <div>
+//       <h1>{title}</h1>
+//     </div>
+//   );
+// };
+
+class Main extends Component {
+  render() {
+    const title = "리액트";
+    return (
+      <div>
+        <h1>{title}</h1>
+      </div>
+    );
+  }
 }
-ul,
-li {
-  list-style: none;
-}
-a {
-  color: #000000;
-  text-decoration: none;
-}
-img {
-  vertical-align: middle;
-  border: 0;
-}
-html {
-  font-size: 16px;
-}
-body {
-  font-family: "Pretendard-Regular", sans-serif;
-  font-size: 1rem;
-  line-height: 1.25;
-  letter-spacing: -0.23px;
-  word-break: keep-all;
-  color: #000000;
-}
+
+export default Main;
 ```
 
-## 1.3 React 개발 편의 도구 설치
+## 2.2 컴포넌트 생성
 
-- React 크롬 개발 도구 [DevTools](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=ko)
-- VSCode React Plugin (ES7+ React/Redux/React-Native snippets ) 설치
+- 파일 및 컴포넌트 명은 파스칼케이스로 한다.
+- 리액트에서는 화살표 함수를 많이 쓴다.
 
-## 1.4 normalize.css 설정(css초기화)
+## 2.3 props(properties)
 
-- `yarn add normalize.css`
-- src/index.js 에서 index.css 위에 import
+- 컴포넌트 속성을 설정할 때 사용하는 요소
+- **props 값은 해당 컴포넌트를 불러와 사용하는 부모 컴포넌트에서 설정**
 
-## scss, emotion.js 설치
+### 2.3.1 JSX 내부에서 props 렌더링
 
-- `yarn add sass`
-- `yarn add @emotion/react`
-- `yarn add @emotion/styled`
+- props 값은 컴포넌트 함수의 파라미터로 받아와서 사용할 수 있다.
+- props를 렌더링 할 때는 JSX 내부에서 {} 기호로 감싸준다.
+- Main.js
 
-## ESLint, prettier 설정
+```js
+import React from "react";
+import "./react.css";
 
-- .prettierrc.json
+const Main = props => {
+  return (
+    <div>
+      <h1>안녕하세요, 나는{props.title}입니다.</h1>
+    </div>
+  );
+};
 
-```json
-{
-  "singleQuote": false,
-  "semi": true,
-  "useTabs": false,
-  "tabWidth": 2,
-  "trailingComma": "all",
-  "printWidth": 80,
-  "arrowParens": "avoid",
-  "endOfLine": "auto"
-}
+export default Main;
 ```
 
-- ESLint 설정
+### 2.3.2 컴포넌트를 사용할 때 props 값 지정하기
 
-  - `yarn add eslint --dev`
-  - `npx eslint --init`
-  - `yarn eslint --init`
-  - To check syntax and find problems 선택
-  - JavaScript modules (import/export) 선택
-  - React 선택
-  - Does your project use TypeScript? No 선택
-  - Where does your code run? Browser 선택
-  - What format do you want your config file to be in? JavaScript 선택
-  - Would you like to install them now? Yes 선택
-  - Which package manager do you want to use? npm 선택
+- App.js
 
-- ESLint와 Prettier를 연결하여 ESLint 설정
+```js
+import Main from "./Main";
 
-  - `yarn add eslint-config-prettier --save-dev`
-  - .eslintrc.js
+function App() {
+  return <Main title="리액트" />;
+}
 
-- 바벨에 의한 경고 제외
-  - `npm install @babel/plugin-proposal-private-property-in-object --dev`
-  - `yarn add @babel/plugin-proposal-private-property-in-object --dev`
+export default App;
+```
+
+### 2.3.3 props 기본값 설정: defaultProps
+
+```js
+import React from "react";
+import "./react.css";
+
+const Main = props => {
+  return (
+    <div>
+      <h1>안녕하세요, 나는{props.title}입니다.</h1>
+    </div>
+  );
+};
+
+Main.defaultProps = {
+  title: "기본 이름",
+};
+
+export default Main;
+```
+
+### 2.3.4 태그 사이의 내용을 보여주는 children
+
+- src/App.js
+
+```js
+import Main from "./Main";
+
+function App() {
+  return <Main>리액트</Main>;
+}
+
+export default App;
+```
+
+- src/Main.js
+
+```js
+import React from "react";
+import "./react.css";
+
+const Main = props => {
+  return (
+    <div>
+      <h1>안녕하세요, 나는{props.title}입니다.</h1>
+      <h2>children 값은 {props.children}입니다.</h2>
+    </div>
+  );
+};
+
+Main.defaultProps = {
+  title: "기본 이름",
+};
+
+export default Main;
+```
+
+### 2.3.5 구조분해할당(비구조화 할당 문법)을 통해 props 내부 값 추출
+
+- https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+
+- src/Main.js
+
+```js
+import React from "react";
+
+
+const Main = ( { title, children } ) => {
+return (
+    <div>
+      <h1>안녕하세요, 나는{title}입니다.</h1>
+      <h2>children 값은 {children}입니다.</h2>
+    </div>
+  );
+};
+
+Main.defaultProps = {
+  title: "기본 이름",
+};
+
+export default Main;
+```
+
+### 2.3.6 prop Types를 통한 props 검증
+- (교채 참고)
