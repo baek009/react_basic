@@ -163,4 +163,5 @@ export default Main;
 ```
 
 ### 2.3.6 prop Types를 통한 props 검증
+
 - (교채 참고)
