@@ -1,12 +1,7 @@
 import Main from "./Main";
 
 function App() {
-
-const onChangeMessage = () => {
-
-}
-
-  <main> <return MassgeonChange=></main>/MassgeonChange={}></return;></Main>;
+  return <Main title= "리액트" />;
 }
 
 export default App;
