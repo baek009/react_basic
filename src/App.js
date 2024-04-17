@@ -1,7 +1,12 @@
 import Main from "./Main";
 
 function App() {
-  return <Main></Main>;
+
+const onChangeMessage = () => {
+
+}
+
+  <main> <return MassgeonChange=></main>/MassgeonChange={}></return;></Main>;
 }
 
 export default App;
