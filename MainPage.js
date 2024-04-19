@@ -1,7 +1,7 @@
 import React from "react";
-import Counter from "../components/Counter";
-import CounterReducer from "../components/CounterReducer";
-import InputReducer from "../components/InputReducer";
+import Counter from "./src/components/Counter";
+import CounterReducer from "./src/components/CounterReducer";
+import InputReducer from "./src/components/InputReducer";
 
 const MainPage = () => {
   return (
