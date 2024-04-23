@@ -16,8 +16,9 @@ const About = () => {
   const onToggleDetail = () => {
     setSearchParams({ mode: 1, detail: detail === "true" ? false : true });
   };
+
   const onIncreaseMode = () => {
-    const nextMode = mode == null ? 1 : parseInt(mode) + 1;
+    const nextMode = mode === null ? 1 : parseInt(mode) + 1;
     setSearchParams({ mode: nextMode, detail });
   };
 

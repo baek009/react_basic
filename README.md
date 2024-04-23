@@ -786,7 +786,6 @@ const NotFound = () => {
     </div>
   );
 };
-
 export default NotFound;
 ```
 
@@ -822,4 +821,19 @@ function App() {
 }
 
 export default App;
+```
+
+### 7.6.4 Navigate 컴포넌트
+
+- 예를 들어 로그인이 필요한 페이지인데 로그인을 안 했다면
+- 리다이렉트(redirect) 하고 싶을때
+
+- src/pages/Login.js
+
+```js
+const Login = () {
+    return <div>로그인 페이지</div>;
+}
+
+export default Login;
 ```
