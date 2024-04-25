@@ -1,11 +1,15 @@
-import ScssComponent from "./components/ScssComponent";
+import StyledComponent from "./components/StyledComponent";
+import Axios from "./pages/Axios";
 
 function App() {
   return (
     <div>
-      <ScssComponent />
+      <Axios />
     </div>
   );
 }
 
 export default App;
+
+
+
