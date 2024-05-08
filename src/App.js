@@ -1,8 +1,15 @@
+import ColorBox from "./components/ColorBox";
+import SelectColors from "./components/SelectColors";
+import { ColorProvider } from "./contexts/ColorContext";
+
 function App() {
   return (
-    <div>
-      <h1>리액트 베이직</h1>
-    </div>
+    <ColorProvider>
+      <div>
+        <SelectColors />
+        <ColorBox />
+      </div>
+    </ColorProvider>
   );
 }
 

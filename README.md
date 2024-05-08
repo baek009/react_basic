@@ -1,101 +1,275 @@
-# 1. 리액트 프로젝트 초기세팅
+# 10. Context API
 
-## 1.1 리액트 프로젝트 생성
+- 리액트 프로젝트에서 전역적으로 사용할 데이터가 있을 때 **유용한 기능**
+- 상태관리 도구는 아닙니다.
+- 사용자 로그인 정보, 애플리케이션 환경 설정, 테마 등등
 
-- `npx create-react-app ./`
-- `yarn create react-app ./`
+## 10.1 Context API를 사용한 전역 상태 관리 흐름 이해하기
 
-## 1.2 파일 정리
+- 최상위 컴포넌트에서 여러 컴포넌트를 거쳐 props로 원하는 상태와 함수를 전달했지만
+- Context API를 사용하면 Context를 만들어서 원하는 값을 받아와서 사용할 수 있다.
 
-- src/test 파일들 삭제
-- App.css 파일 삭제
-- index.js 파일 정리
-- index.css 파일 수정
+## 10.2 Context API 사용법
 
-```css
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  outline-style: none;
-}
-ul,
-li {
-  list-style: none;
-}
-a {
-  color: #000000;
-  text-decoration: none;
-}
-img {
-  vertical-align: middle;
-  border: 0;
-}
-html {
-  font-size: 16px;
-}
-body {
-  font-family: "Pretendard-Regular", sans-serif;
-  font-size: 1rem;
-  line-height: 1.25;
-  letter-spacing: -0.23px;
-  word-break: keep-all;
-  color: #000000;
-}
+### 10.2.1 새 Context 만들기
+
+- src/contexts/color.js
+
+```js
+import { createContext } from "react";
+
+const ColorContext = createContext({ color: "black" });
 ```
 
-## 1.3 React 개발 편의 도구 설치
+### 10.2.2 Consumer 사용하기
 
-- React 크롬 개발 도구 [DevTools](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=ko)
-- VSCode React Plugin (ES7+ React/Redux/React-Native snippets ) 설치
+- 색상을 props로 받아오는 것이 아니라 ColorContext 안에 들어있는 Consumer라는 컴포넌트를 통해 색상을 조회한다.
 
-## 1.4 normalize.css 설정(css초기화)
+- src/components/ColorBox.js
 
-- `yarn add normalize.css`
-- src/index.js 에서 index.css 위에 import
+```js
+import React from "react";
+import { colorContext } from "../contexts/colorContext";
 
-## scss, emotion.js 설치
+const ColorBox = () => {
+  return (
+    <colorContext.Consumer>
+      {value => (
+        <div
+          style={{ width: "200px", height: "200px", background: value.color }}
+        ></div>
+      )}
+    </colorContext.Consumer>
+  );
+};
 
-- `yarn add sass`
-- `yarn add @emotion/react`
-- `yarn add @emotion/styled`
-
-## ESLint, prettier 설정
-
-- .prettierrc.json
-
-```json
-{
-  "singleQuote": false,
-  "semi": true,
-  "useTabs": false,
-  "tabWidth": 2,
-  "trailingComma": "all",
-  "printWidth": 80,
-  "arrowParens": "avoid",
-  "endOfLine": "auto"
-}
+export default ColorBox;
 ```
 
-- ESLint 설정
+### 10.2.3 Provider
 
-  - `yarn add eslint --dev`
-  - `npx eslint --init`
-  - `yarn eslint --init`
-  - To check syntax and find problems 선택
-  - JavaScript modules (import/export) 선택
-  - React 선택
-  - Does your project use TypeScript? No 선택
-  - Where does your code run? Browser 선택
-  - What format do you want your config file to be in? JavaScript 선택
-  - Would you like to install them now? Yes 선택
-  - Which package manager do you want to use? npm 선택
+- Provider를 사용하여 Context의 value를 변경할 수 있다.
+- src/App.js
 
-- ESLint와 Prettier를 연결하여 ESLint 설정
+```js
+import ColorBox from "./components/ColorBox";
+import { colorContext } from "./contexts/colorContext";
 
-  - `yarn add eslint-config-prettier --save-dev`
-  - .eslintrc.js
+function App() {
+  return (
+    <colorContext.Provider value={{ color: "red" }}>
+      <div>
+        <ColorBox />
+      </div>
+    </colorContext.Provider>
+  );
+}
 
-- 바벨에 의한 경고 제외
-  - `npm install @babel/plugin-proposal-private-property-in-object --dev`
-  - `yarn add @babel/plugin-proposal-private-property-in-object --dev`
+export default App;
+```
+
+## 10.3 동적 Context 사용하기
+
+- Context의 값을 업데이트 해야하는 경우
+
+### 10.3.1 Context 파일
+
+- Context의 value 에는 상태 값 뿐만 아니라 함수를 전달해 줄 수 있다.
+- src/contexts/colorContext.js
+
+```js
+import { createContext, useState } from "react";
+
+export const colorContext = createContext({
+  state: { color: "black", subcolor: "red" },
+  actions: {
+    setColor: () => {},
+    setSubColor: () => {},
+  },
+});
+
+export const colorProvider = ({ children }) => {
+  const [color, setColor] = useState("black");
+  const [subcolor, setSubcolor] = useState("red");
+
+  const value = {
+    state: { color, subcolor },
+    actions: { setColor, setSubcolor },
+  };
+
+  return (
+    <colorContext.Provider value={value}>{children}</colorContext.Provider>
+  );
+};
+
+export const { Consumer: colorConsumer } = colorContext;
+```
+
+### 10.3.2 Context 반영하기
+
+- App.js
+
+```js
+import ColorBox from "./components/ColorBox";
+import { colorProvider } from "./contexts/colorContext";
+
+function App() {
+  return (
+    <colorProvider>
+      <div>
+        <ColorBox />
+      </div>
+    </colorProvider>
+  );
+}
+
+export default App;
+```
+
+- src/components/ColorBox.js
+
+```js
+import React from "react";
+import { colorContext } from "../contexts/colorContext";
+import { colorConsumer } from "../contexts/colorContext";
+
+const ColorBox = () => {
+  return (
+    <colorConsumer>
+      {({ state }) => (
+        <>
+          <div
+            style={{ width: "200px", height: "200px", background: state.color }}
+          ></div>
+          <div
+            style={{
+              width: "200px",
+              height: "200px",
+              background: state.subcolor,
+            }}
+          ></div>
+        </>
+      )}
+    </colorConsumer>
+  );
+};
+
+export default ColorBox;
+```
+
+### 10.3.3 색상 선택 컴포넌트 만들기
+
+- Context의 actions에 넣어 준 함수를 호출하는 컴포넌트
+- src/components/SelectColors.js
+
+```js
+import React from "react";
+import { ColorConsumer } from "../contexts/colorContext";
+
+const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+
+const SelectColors = () => {
+  return (
+    <div>
+      <h2>색상을 선택하세요.</h2>
+      <ColorConsumer>
+        {({ actions }) => (
+          <div style={{ display: "flex" }}>
+            {colors.map(color => (
+              <div
+                key={color}
+                style={{
+                  background: color,
+                  width: "100px",
+                  height: "100px",
+                  cursor: "pointer",
+                }}
+                onClick={() => actions.setColor(color)}
+                onContextMenu={e => {
+                  e.preventDefault(); // 기본동작 방지
+                  actions.setSubcolor(color);
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </ColorConsumer>
+    </div>
+  );
+};
+
+export default SelectColors;
+```
+
+## 10.4 Consumer 대신 Hook 사용하기
+
+- Context에 있는 값을 사용할 때 Consumer 대신에 다른 방식을 사용하여 값을 받아오기
+
+### 10.4.1 useContext 사용하기
+
+- src/components/ColorBox.js
+
+```js
+import React, { useContext } from "react";
+import { ColorContext } from "../contexts/colorContext";
+
+const ColorBox = () => {
+  const { state } = useContext(ColorContext);
+
+  return (
+    <>
+      <div
+        style={{ width: "200px", height: "200px", background: state.color }}
+      ></div>
+      <div
+        style={{
+          width: "200px",
+          height: "200px",
+          background: state.subcolor,
+        }}
+      ></div>
+    </>
+  );
+};
+
+export default ColorBox;
+```
+
+- src/components/SelectColors.js
+
+```js
+import React, { useContext } from "react";
+import { ColorContext } from "../contexts/colorContext";
+
+const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+
+const SelectColors = () => {
+  const { actions } = useContext(ColorContext);
+
+  return (
+    <div>
+      <h2>색상을 선택하세요.</h2>
+      <div style={{ display: "flex" }}>
+        {colors.map(color => (
+          <div
+            key={color}
+            style={{
+              background: color,
+              width: "100px",
+              height: "100px",
+              cursor: "pointer",
+            }}
+            onClick={() => actions.setColor(color)}
+            onContextMenu={e => {
+              e.preventDefault(); // 기본동작 방지
+              actions.setSubcolor(color);
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SelectColors;
+```
